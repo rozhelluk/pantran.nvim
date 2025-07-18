@@ -46,11 +46,22 @@ Run the command `:Pantran` to open an interactive translation window and start
 typing to get an understanding of how things work. Type `g?` in normal mode or
 `i_CTRL-/` in insert mode to open a help buffer with available keybindings.
 `:Pantran` also supports command ranges to initialize the translation window.
+Additionally, you can pass text directly to the command without selecting buffer content first:
+```vim
+:Pantran Hello, World!                    " Translate text directly
+:Pantran target=uk engine=google Hello    " Translate with specific options
+:1,5Pantran                              " Translate lines 1-5 from buffer
+:'<,'>Pantran                            " Translate visual selection
+```
+The command can also be used when starting nvim:
+nvim +Pantran                            " Open nvim with translation window
+nvim +"Pantran Hello, World!"            " Start nvim and translate text directly
 Further, some optional flags for configuration of the translation process are
 available<!-- panvimdoc-ignore-start -->, consult the
 [documentation](doc/README.md) for more details<!-- panvimdoc-ignore-end -->.
 If you plan to translate frequently, the command can also be mapped to the
 following recommended keybindings:
+
 
 <!-- panvimdoc-ignore-start -->
 <details open>
