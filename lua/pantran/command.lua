@@ -129,15 +129,24 @@ end
 
 function command.parse(line1, line2, ...)
   local opts = {count = line2 ~= -1 and line2 - (line1 - 1)}
+  local text_to_translate = nil
 
   for _, arg in ipairs{...} do
     local key, value = arg:match("(.-)=(.+)")
     if key and value then
       opts[key] = value
+    else
+      text_to_translate = (text_to_translate and text_to_translate .. " " or "") .. arg
     end
   end
 
-  command.range_translate(opts)
+  if text_to_translate then
+    -- Use provided text instead of buffer content
+    local marks = command._coords2marks{srow = 0, scol = 0, erow = 0, ecol = 0}
+    command._translate(text_to_translate, true, marks, opts)
+  else
+    command.range_translate(opts)
+  end
 end
 
 return config.apply(config.user.command, command)
