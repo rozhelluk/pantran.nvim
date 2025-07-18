@@ -37,9 +37,21 @@ end
 -- we need to create marks for coords, since coords could change during
 -- non-interactive translations with a large delay
 function command._coords2marks(coords)
+  -- Validate and clamp coordinates to buffer bounds
+  local buf_lines = vim.api.nvim_buf_line_count(0)
+  local srow = math.max(0, math.min(coords.srow, buf_lines - 1))
+  local erow = math.max(0, math.min(coords.erow, buf_lines - 1))
+
+  -- Get actual line lengths for column bounds
+  local sline = vim.api.nvim_buf_get_lines(0, srow, srow + 1, true)[1] or ""
+  local eline = vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)[1] or ""
+
+  local scol = math.max(0, math.min(coords.scol, #sline))
+  local ecol = math.max(0, math.min(coords.ecol, #eline))
+
   return {
-    start = vim.api.nvim_buf_set_extmark(0, command.namespace, coords.srow, coords.scol, {}),
-    stop  = vim.api.nvim_buf_set_extmark(0, command.namespace, coords.erow, coords.ecol, {})
+    start = vim.api.nvim_buf_set_extmark(0, command.namespace, srow, scol, {}),
+    stop  = vim.api.nvim_buf_set_extmark(0, command.namespace, erow, ecol, {})
   }
 end
 
