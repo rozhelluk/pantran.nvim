@@ -80,8 +80,13 @@ function command.range_translate(opts)
   local srow, erow, scol, ecol
   srow, scol = vim.api.nvim_win_get_cursor(0)[1] - 1, 0
   erow = srow + math.max(0, (opts.count or vim.v.count) - 1)
-  ecol = #vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)[1] - 1
-
+  local lines = vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)
+  if #lines == 0 then
+    local total_lines = vim.api.nvim_buf_line_count(0)
+    erow = math.min(erow, total_lines - 1)
+    lines = vim.api.nvim_buf_get_lines(0, erow, erow + 1, true)
+  end
+  ecol = lines[1] and #lines[1] - 1 or 0
   local marks = command._coords2marks{srow = srow, scol = scol, erow = erow, ecol = ecol}
   local input = table.concat(uapi.nvim_buf_get_text(0, srow, scol, erow + 1, ecol + 1), "\n")
   command._translate(input, (opts.count or vim.v.count) > 0, marks, opts)
